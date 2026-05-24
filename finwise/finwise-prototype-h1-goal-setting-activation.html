@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinWise — Goal-Setting Activation Prototype</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f5f5f5;
+      padding: 40px 20px;
+    }
+
+    .phone-frame {
+      width: 390px;
+      background: #ffffff;
+      border-radius: 40px;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.25), 0 0 0 1px rgba(0,0,0,0.08);
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .phone-frame::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 24px;
+      background: #000;
+      border-radius: 0 0 20px 20px;
+      z-index: 100;
+    }
+
+    .screen {
+      width: 390px;
+      min-height: 844px;
+      display: none;
+      flex-direction: column;
+      background: #ffffff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* HEADER / STATUS BAR */
+    .status-bar {
+      height: 44px;
+      background: #00CDA8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 16px;
+      font-size: 12px;
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    .status-left {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .status-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* TOP HEADER */
+    .header {
+      background: #00CDA8;
+      color: #ffffff;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-left h1 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .header-left p {
+      font-size: 12px;
+      font-weight: 300;
+      opacity: 0.9;
+    }
+
+    .header-right {
+      width: 36px;
+      height: 36px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    /* DASHBOARD CONTENT */
+    .dashboard {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 16px;
+      background: #ffffff;
+    }
+
+    .balance-card {
+      background: #00CDA8;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      color: #ffffff;
+    }
+
+    .balance-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .balance-item {
+      flex: 1;
+    }
+
+    .balance-label {
+      font-size: 12px;
+      font-weight: 500;
+      opacity: 0.9;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .balance-amount {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .balance-divider {
+      width: 1px;
+      height: 40px;
+      background: rgba(255,255,255,0.2);
+    }
+
+    .goal-progress-bar {
+      background: rgba(0,0,0,0.2);
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+
+    .goal-progress-fill {
+      height: 100%;
+      background: #2C2C2C;
+      width: 30%;
+    }
+
+    .progress-label {
+      font-size: 11px;
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .goal-insight {
+      font-size: 12px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    /* GOAL CARD */
+    .goal-card {
+      background: #E1F7F1;
+      border: 2px solid #00CDA8;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .goal-card-left {
+      flex: 1;
+    }
+
+    .goal-card h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #2C2C2C;
+      margin-bottom: 4px;
+    }
+
+    .goal-card p {
+      font-size: 12px;
+      color: #155E43;
+      font-weight: 400;
+    }
+
+    .goal-card-icon {
+      width: 36px;
+      height: 36px;
+      background: #00CDA8;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    /* SECTION TITLE */
+    .section-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: #2C2C2C;
+      margin: 20px 0 12px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* TRANSACTION LIST */
+    .transaction-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .transaction-item:last-child {
+      border-bottom: none;
+    }
+
+    .transaction-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .transaction-icon {
+      width: 40px;
+      height: 40px;
+      background: #2299FF;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 18px;
+    }
+
+    .transaction-details h4 {
+      font-size: 14px;
+      font-weight: 500;
+      color: #2C2C2C;
+    }
+
+    .transaction-details p {
+      font-size: 12px;
+      color: #A7CFFE;
+      font-weight: 400;
+    }
+
+    .transaction-amount {
+      font-size: 14px;
+      font-weight: 600;
+      color: #2C2C2C;
+    }
+
+    /* BOTTOM NAV */
+    .bottom-nav {
+      height: 60px;
+      border-top: 1px solid #f0f0f0;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background: #ffffff;
+    }
+
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      gap: 4px;
+      font-size: 10px;
+      color: #A7CFFE;
+      text-align: center;
+    }
+
+    .nav-item.active {
+      color: #00CDA8;
+    }
+
+    .nav-icon {
+      font-size: 20px;
+    }
+
+    /* MODAL STYLES */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 500;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px 20px;
+      width: 90%;
+      max-width: 340px;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+
+    .modal h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #2C2C2C;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .modal p {
+      font-size: 14px;
+      color: #155E43;
+      margin-bottom: 24px;
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    .modal-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .template-btn {
+      background: #00CDA8;
+      color: #ffffff;
+      border: none;
+      padding: 12px 8px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .template-btn:hover {
+      background: #0D5540;
+    }
+
+    .template-btn:active {
+      opacity: 0.8;
+    }
+
+    .maybe-later-btn {
+      background: none;
+      border: none;
+      color: #00CDA8;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      text-decoration: underline;
+    }
+
+    .maybe-later-btn:hover {
+      color: #0D5540;
+    }
+
+    /* EMAIL SCREEN */
+    .email-mockup {
+      background: #f5f5f5;
+      padding: 16px;
+    }
+
+    .email-card {
+      background: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .email-header {
+      background: #00CDA8;
+      color: #ffffff;
+      padding: 16px;
+    }
+
+    .email-from {
+      font-size: 12px;
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .email-subject {
+      font-size: 16px;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    .email-body {
+      padding: 20px 16px;
+    }
+
+    .email-body p {
+      font-size: 14px;
+      color: #2C2C2C;
+      line-height: 1.6;
+      margin-bottom: 16px;
+      font-weight: 400;
+    }
+
+    .email-cta {
+      background: #00CDA8;
+      color: #ffffff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      width: 100%;
+      margin-bottom: 16px;
+    }
+
+    .email-cta:hover {
+      background: #0D5540;
+    }
+
+    .email-footer {
+      text-align: center;
+      font-size: 12px;
+      color: #A7CFFE;
+      padding-top: 16px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    /* GOAL CREATION PAGE */
+    .goal-creation {
+      padding: 20px 16px;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      font-size: 18px;
+      color: #00CDA8;
+      cursor: pointer;
+      margin-bottom: 16px;
+      padding: 8px;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .goal-creation h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #2C2C2C;
+      margin-bottom: 8px;
+    }
+
+    .goal-creation p {
+      font-size: 14px;
+      color: #155E43;
+      margin-bottom: 24px;
+      font-weight: 400;
+    }
+
+    .full-width-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .full-width-btn {
+      background: #00CDA8;
+      color: #ffffff;
+      border: none;
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+    }
+
+    .full-width-btn:hover {
+      background: #0D5540;
+    }
+
+    .full-width-btn:active {
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-frame">
+    <!-- SCREEN 1: DAY 1 MODAL -->
+    <div class="screen active" id="screen-1">
+      <div class="status-bar">
+        <div class="status-left">16:04</div>
+        <div class="status-right">📶 🔋</div>
+      </div>
+
+      <div class="header">
+        <div class="header-left">
+          <h1>Hi, Welcome Back</h1>
+          <p>Good Morning</p>
+        </div>
+        <div class="header-right">🔔</div>
+      </div>
+
+      <div class="dashboard">
+        <div class="balance-card">
+          <div class="balance-row">
+            <div class="balance-item">
+              <div class="balance-label">✓ Total Balance</div>
+              <div class="balance-amount">$7,783.00</div>
+            </div>
+            <div class="balance-divider"></div>
+            <div class="balance-item" style="padding-left: 16px;">
+              <div class="balance-label">✓ Total Expense</div>
+              <div class="balance-amount" style="color: #2299FF;">-$1,187.40</div>
+            </div>
+          </div>
+          <div class="goal-progress-bar">
+            <div class="goal-progress-fill"></div>
+          </div>
+          <div class="progress-label">
+            <span>30%</span>
+            <span>$20,000.00</span>
+          </div>
+          <div class="goal-insight">✓ 30% Of Your Expenses, Looks Good.</div>
+        </div>
+
+        <div class="goal-card">
+          <div class="goal-card-left">
+            <h3>Savings On Goals</h3>
+            <p>Revenue Last Week: $4,000.00</p>
+          </div>
+          <div class="goal-card-icon">🎯</div>
+        </div>
+
+        <div class="section-title">Recent Transactions</div>
+
+        <div class="transaction-item">
+          <div class="transaction-left">
+            <div class="transaction-icon">📦</div>
+            <div class="transaction-details">
+              <h4>Salary</h4>
+              <p>18:27 – April 30</p>
+            </div>
+          </div>
+          <div class="transaction-amount">$4,000.00</div>
+        </div>
+
+        <div class="transaction-item">
+          <div class="transaction-left">
+            <div class="transaction-icon">🛒</div>
+            <div class="transaction-details">
+              <h4>Groceries</h4>
+              <p>17:00 – April 24</p>
+            </div>
+          </div>
+          <div class="transaction-amount" style="color: #2299FF;">-$100.00</div>
+        </div>
+
+        <div class="transaction-item">
+          <div class="transaction-left">
+            <div class="transaction-icon">🏠</div>
+            <div class="transaction-details">
+              <h4>Rent</h4>
+              <p>8:30 – April 15</p>
+            </div>
+          </div>
+          <div class="transaction-amount" style="color: #2299FF;">-$674.40</div>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item active" onclick="navigateTo(1)">
+          <div class="nav-icon">🏠</div>
+          <div>Home</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo(1)">
+          <div class="nav-icon">📊</div>
+          <div>Analysis</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo(1)">
+          <div class="nav-icon">↔️</div>
+          <div>Transfer</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo(1)">
+          <div class="nav-icon">📚</div>
+          <div>Budgets</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo(1)">
+          <div class="nav-icon">👤</div>
+          <div>Profile</div>
+        </div>
+      </div>
+
+      <!-- DAY 1 MODAL -->
+      <div class="modal-overlay active" id="day1-modal">
+        <div class="modal">
+          <h2>Set your first goal</h2>
+          <p>Users who set a goal are 2.6x more likely to stay on track with their finances.</p>
+          <div class="modal-buttons">
+            <button class="template-btn" onclick="createGoal('Emergency Fund', 1)">Emergency Fund</button>
+            <button class="template-btn" onclick="createGoal('Vacation Fund', 1)">Vacation Fund</button>
+            <button class="template-btn" onclick="createGoal('Debt Payoff', 1)">Debt Payoff</button>
+            <button class="template-btn" onclick="createGoal('Custom Goal', 1)">Custom Goal</button>
+          </div>
+          <button class="maybe-later-btn" onclick="dismissModal(1)">Maybe Later</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: GOAL CREATED DASHBOARD -->
+    <div class="screen" id="screen-2">
+      <div class="status-bar">
+        <div class="status-left">16:04</div>
+        <div class="status-right">📶 🔋</div>
+      </div>
+
+      <div class="header">
+        <div class="header-left">
+          <h1>Hi, Welcome Back</h1>
+          <p>Good Morning</p>
+        </div>
+        <div class="header-right">🔔</div>
+      </div>
+
+      <div class="dashboard">
+        <div class="balance-card">
+          <div class="balance-row">
+            <div class="balance-item">
+              <div class="balance-label">✓ Total Balance</div>
+              <div class="balance-amount">$7,783.00</div>
+            </div>
+            <div class="balance-divider"></div>
+            <div class="balance-item" style="padding-left: 16px;">
+              <div class="balance-label">✓ Total Expense</div>
+              <div class="balance-amount" style="color: #2299FF;">-$1,187.40</div>
+            </div>
+          </div>
+          <div class="goal-progress-bar">
+            <div class="goal-progress-fill"></div>
+          </div>
+          <div class="progress-label">
+            <span>30%</span>
+            <span>$20,000.00</span>
+          </div>
+          <div class="goal-insight">✓ 30% Of Your Expenses, Looks Good.</div>
+        </div>
+
+        <!-- NEW GOAL CARD -->
+        <div class="goal-card" id="new-goal-card">
+          <div class="goal-card-left">
+            <h3 id="goal-name">Emergency Fund</h3>
+            <p>Target: Not set</p>
+          </div>
+          <div class="goal-card-icon">✏️</div>
+        </div>
+
+        <div class="section-title">Recent Transactions</div>
+
+        <div class="transaction-item">
+          <div class="transaction-left">
+            <div class="transaction-icon">📦</div>
+            <div class="transaction-details">
+              <h4>Salary</h4>
+              <p>18:27 – April 30</p>
+            </div>
+          </div>
+          <div class="transaction-amount">$4,000.00</div>
+        </div>
+
+        <div class="transaction-item">
+          <div class="transaction-left">
+            <div class="transaction-icon">🛒</div>
+            <div class="transaction-details">
+              <h4>Groceries</h4>
+              <p>17:00 – April 24</p>
+            </div>
+          </div>
+          <div class="transaction-amount" style="color: #2299FF;">-$100.00</div>
+        </div>
+
+        <div class="transaction-item">
+          <div class="transaction-left">
+            <div class="transaction-icon">🏠</div>
+            <div class="transaction-details">
+              <h4>Rent</h4>
+              <p>8:30 – April 15</p>
+            </div>
+          </div>
+          <div class="transaction-amount" style="color: #2299FF;">-$674.40</div>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item active" onclick="navigateTo(2)">
+          <div class="nav-icon">🏠</div>
+          <div>Home</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo(2)">
+          <div class="nav-icon">📊</div>
+          <div>Analysis</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo(2)">
+          <div class="nav-icon">↔️</div>
+          <div>Transfer</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo(2)">
+          <div class="nav-icon">📚</div>
+          <div>Budgets</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo(2)">
+          <div class="nav-icon">👤</div>
+          <div>Profile</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: DAY 3-4 RE-PROMPT MODAL -->
+    <div class="screen" id="screen-3">
+      <div class="status-bar">
+        <div class="status-left">16:04</div>
+        <div class="status-right">📶 🔋</div>
+      </div>
+
+      <div class="header">
+        <div class="header-left">
+          <h1>Hi, Welcome Back</h1>
+          <p>Good Morning</p>
+        </div>
+        <div class="header-right">🔔</div>
+      </div>
+
+      <div class="dashboard">
+        <div class="balance-card">
+          <div class="balance-row">
+            <div class="balance-item">
+              <div class="balance-label">✓ Total Balance</div>
+              <div class="balance-amount">$7,783.00</div>
+            </div>
+            <div class="balance-divider"></div>
+            <div class="balance-item" style="padding-left: 16px;">
+              <div class="balance-label">✓ Total Expense</div>
+              <div class="balance-amount" style="color: #2299FF;">-$1,187.40</div>
+            </div>
+          </div>
+          <div class="goal-progress-bar">
+            <div class="goal-progress-fill"></div>
+          </div>
+          <div class="progress-label">
+            <span>30%</span>
+            <span>$20,000.00</span>
+          </div>
+          <div class="goal-insight">✓ 30% Of Your Expenses, Looks Good.</div>
+        </div>
+
+        <div class="goal-card">
+          <div class="goal-card-left">
+            <h3>Savings On Goals</h3>
+            <p>Revenue Last Week: $4,000.00</p>
+          </div>
+          <div class="goal-card-icon">🎯</div>
+        </div>
+
+        <div class="section-title">Recent Transactions</div>
+
+        <div class="transaction-item">
+          <div class="transaction-left">
+            <div class="transaction-icon">📦</div>
+            <div class="transaction-details">
+              <h4>Salary</h4>
+              <p>18:27 – April 30</p>
+            </div>
+          </div>
+          <div class="transaction-amount">$4,000.00</div>
+        </div>
+
+        <div class="transaction-item">
+          <div class="transaction-left">
+            <div class="transaction-icon">🛒</div>
+            <div class="transaction-details">
+              <h4>Groceries</h4>
+              <p>17:00 – April 24</p>
+            </div>
+          </div>
+          <div class="transaction-amount" style="color: #2299FF;">-$100.00</div>
+        </div>
+
+        <div class="transaction-item">
+          <div class="transaction-left">
+            <div class="transaction-icon">🏠</div>
+            <div class="transaction-details">
+              <h4>Rent</h4>
+              <p>8:30 – April 15</p>
+            </div>
+          </div>
+          <div class="transaction-amount" style="color: #2299FF;">-$674.40</div>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item active" onclick="navigateTo(3)">
+          <div class="nav-icon">🏠</div>
+          <div>Home</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo(3)">
+          <div class="nav-icon">📊</div>
+          <div>Analysis</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo(3)">
+          <div class="nav-icon">↔️</div>
+          <div>Transfer</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo(3)">
+          <div class="nav-icon">📚</div>
+          <div>Budgets</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo(3)">
+          <div class="nav-icon">👤</div>
+          <div>Profile</div>
+        </div>
+      </div>
+
+      <!-- DAY 3-4 RE-PROMPT MODAL (IDENTICAL) -->
+      <div class="modal-overlay active" id="day34-modal">
+        <div class="modal">
+          <h2>Set your first goal</h2>
+          <p>Users who set a goal are 2.6x more likely to stay on track with their finances.</p>
+          <div class="modal-buttons">
+            <button class="template-btn" onclick="createGoal('Emergency Fund', 3)">Emergency Fund</button>
+            <button class="template-btn" onclick="createGoal('Vacation Fund', 3)">Vacation Fund</button>
+            <button class="template-btn" onclick="createGoal('Debt Payoff', 3)">Debt Payoff</button>
+            <button class="template-btn" onclick="createGoal('Custom Goal', 3)">Custom Goal</button>
+          </div>
+          <button class="maybe-later-btn" onclick="dismissModal(3)">Maybe Later</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 4: EMAIL MOCKUP -->
+    <div class="screen" id="screen-4">
+      <div class="status-bar">
+        <div class="status-left">16:04</div>
+        <div class="status-right">📶 🔋</div>
+      </div>
+
+      <div style="padding: 12px; background: #f5f5f5; display: flex; align-items: center; height: 44px;">
+        <button class="back-btn" onclick="navigateTo(1)" style="margin: 0; padding: 0;">← Back</button>
+      </div>
+
+      <div class="email-mockup" style="flex: 1; overflow-y: auto;">
+        <div class="email-card">
+          <div class="email-header">
+            <div class="email-from">From: hello@finwise.app</div>
+            <div class="email-subject">The #1 thing successful FinWise users do</div>
+          </div>
+          <div class="email-body">
+            <p>Hi there,</p>
+            <p>Users who set goals within the first week report feeling 78% more secure about their finances 3 weeks later. It takes just 30 seconds; we'll help you every step of the way.</p>
+            <button class="email-cta" onclick="navigateTo(5)">Set Your First Goal</button>
+            <div class="email-footer">
+              <p>— FinWise Team</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-nav" style="border-top: 1px solid #f0f0f0; background: #ffffff;">
+        <div class="nav-item">
+          <div class="nav-icon">🏠</div>
+          <div>Home</div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">📊</div>
+          <div>Analysis</div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">↔️</div>
+          <div>Transfer</div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">📚</div>
+          <div>Budgets</div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">👤</div>
+          <div>Profile</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 5: EMAIL GOAL-CREATION PAGE -->
+    <div class="screen" id="screen-5">
+      <div class="status-bar">
+        <div class="status-left">16:04</div>
+        <div class="status-right">📶 🔋</div>
+      </div>
+
+      <div class="header">
+        <div class="header-left">
+          <h1>Set your goal</h1>
+          <p>From email</p>
+        </div>
+        <div class="header-right">🔔</div>
+      </div>
+
+      <div class="goal-creation">
+        <button class="back-btn" onclick="navigateTo(4)">← Back</button>
+        <h1>Set your first goal</h1>
+        <p>You're all set to create a goal. Choose one below or create your own.</p>
+
+        <div class="full-width-buttons">
+          <button class="full-width-btn" onclick="createGoal('Emergency Fund', 5)">Emergency Fund</button>
+          <button class="full-width-btn" onclick="createGoal('Vacation Fund', 5)">Vacation Fund</button>
+          <button class="full-width-btn" onclick="createGoal('Debt Payoff', 5)">Debt Payoff</button>
+          <button class="full-width-btn" onclick="createGoal('Custom Goal', 5)">Custom Goal</button>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item">
+          <div class="nav-icon">🏠</div>
+          <div>Home</div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">📊</div>
+          <div>Analysis</div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">↔️</div>
+          <div>Transfer</div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">📚</div>
+          <div>Budgets</div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">👤</div>
+          <div>Profile</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentGoal = null;
+
+    function navigateTo(screenNum) {
+      // Hide all screens
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      // Show target screen
+      document.getElementById('screen-' + screenNum).classList.add('active');
+    }
+
+    function createGoal(goalName, fromScreen) {
+      currentGoal = goalName;
+      // Update goal name on screen 2
+      document.getElementById('goal-name').textContent = goalName;
+      // Navigate to dashboard with goal created
+      navigateTo(2);
+    }
+
+    function dismissModal(screenNum) {
+      const modalId = screenNum === 1 ? 'day1-modal' : 'day34-modal';
+      const modal = document.getElementById(modalId);
+      modal.classList.remove('active');
+      
+      // After 300ms, show next screen or stay on current
+      setTimeout(() => {
+        if (screenNum === 1) {
+          // On day 1 dismiss, show day 3-4 after a delay or stay on same screen
+          // For prototype, we'll just keep them on current screen
+          modal.classList.add('active');
+        } else if (screenNum === 3) {
+          // On day 3-4 dismiss, modal is gone (navigate to different screen or remove modal)
+          modal.classList.add('active');
+        }
+      }, 300);
+    }
+
+    // Initialize
+    navigateTo(1);
+  </script>
+</body>
+</html>
